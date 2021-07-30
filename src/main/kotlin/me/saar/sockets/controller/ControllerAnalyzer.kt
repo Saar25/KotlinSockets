@@ -25,7 +25,8 @@ private class ControllerEndpoint(val endpoint: String, val function: KFunction<*
 private fun findControllerEndpoints(controller: KClass<out Controller>): List<ControllerEndpoint> {
     return controller.memberFunctions.filter { it.annotations.any { a -> a is Endpoint } }.map { f ->
         val annotation = f.annotations.find { a -> a is Endpoint } as Endpoint
-        return@map ControllerEndpoint(annotation.endpoint, f)
+        val endpoint = annotation.endpoint.ifEmpty { f.name }
+        return@map ControllerEndpoint(endpoint, f)
     }
 }
 

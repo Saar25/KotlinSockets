@@ -19,7 +19,7 @@ class ServerController : Controller {
         private val idProvider = IdProvider()
     }
 
-    @Endpoint("join")
+    @Endpoint
     fun join(@Socket client: MySocket) {
         val id = idProvider.next()
         client.send(id)
@@ -31,12 +31,12 @@ class ServerController : Controller {
         ChatStore.clientEntered(ChatEnter(id))
     }
 
-    @Endpoint("message")
+    @Endpoint
     fun message(@Body message: ChatMessage) {
         ChatStore.clientMessage(message)
     }
 
-    @Endpoint("exit")
+    @Endpoint
     fun exit(@Socket client: MySocket, @Body leave: ChatLeave) {
         client.close()
 
