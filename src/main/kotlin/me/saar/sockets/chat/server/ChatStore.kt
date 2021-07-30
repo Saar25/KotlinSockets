@@ -11,6 +11,8 @@ object ChatStore {
 
     val chatObservable: Observable<ChatEvent> get() = this.chat
 
+    fun serverMessage(chatServerMessage: ChatServerMessage) = this.chat.next(chatServerMessage)
+
     fun clientMessage(chatMessage: ChatMessage) = this.chat.next(chatMessage)
 
     fun clientEntered(chatEnter: ChatEnter) = this.chat.next(chatEnter)
