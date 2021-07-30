@@ -1,0 +1,21 @@
+package me.saar.sockets
+
+class SocketEvent<T>(val endpoint: String, val body: T) {
+
+    operator fun component1() = this.endpoint
+    operator fun component2() = this.body
+
+    companion object {
+        private fun String.splitAtIndex(index: Int): Pair<String, String> {
+            return Pair(substring(0, index), substring(index + 1))
+        }
+
+        fun parse(data: String): SocketEvent<String> {
+            val separate = data.indexOf(' ')
+
+            val (endpoint, body) = data.splitAtIndex(separate)
+
+            return SocketEvent(endpoint, body)
+        }
+    }
+}
