@@ -1,7 +1,7 @@
 package me.saar.sockets.chat.server
 
 import me.saar.sockets.MySocket
-import me.saar.sockets.controller.ControllerAnalyzer
+import me.saar.sockets.controller.buildRouter
 import me.saar.sockets.socketListen
 import java.net.ServerSocket
 import java.net.SocketException
@@ -10,7 +10,7 @@ import kotlin.concurrent.thread
 class Server(port: Int) {
 
     private val serverController = ServerController()
-    private val socketRouter = ControllerAnalyzer.buildRouter(this.serverController)
+    private val socketRouter = this.serverController.buildRouter()
 
     private val socket = ServerSocket(port)
 
@@ -59,7 +59,7 @@ class Server(port: Int) {
             val client = MySocket(socket)
 
             socketListen(client) {
-                this.socketRouter.onEvent(client, it)
+                this.socketRouter.handle(client, it)
                 println("Request to '${it.endpoint}', with value '${it.body}'")
             }
 

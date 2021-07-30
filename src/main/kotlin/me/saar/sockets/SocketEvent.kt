@@ -1,6 +1,6 @@
 package me.saar.sockets
 
-class SocketEvent<T>(val endpoint: String, val body: T) {
+class SocketEvent(val endpoint: String, val body: String) {
 
     operator fun component1() = this.endpoint
     operator fun component2() = this.body
@@ -10,7 +10,7 @@ class SocketEvent<T>(val endpoint: String, val body: T) {
             return Pair(substring(0, index), substring(index + 1))
         }
 
-        fun parse(data: String): SocketEvent<String> {
+        fun parse(data: String): SocketEvent {
             val separate = data.indexOf(' ')
 
             val (endpoint, body) = data.splitAtIndex(separate)

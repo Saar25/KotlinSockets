@@ -1,23 +1,21 @@
 package me.saar.sockets
 
-typealias Callback = (MySocket, String) -> Unit
+class SocketRouter : SocketEventHandler {
 
-class SocketRouter {
-
-    private class SocketRoute(val endpoint: String, val callback: Callback) {
+    private class SocketRoute(val endpoint: String, val callback: SocketEventHandler) {
         operator fun component1() = this.endpoint
         operator fun component2() = this.callback
     }
 
     private val routes = mutableListOf<SocketRoute>()
 
-    fun route(endpoint: String, callback: Callback) {
+    fun route(endpoint: String, callback: SocketEventHandler) {
         this.routes += SocketRoute(endpoint, callback)
     }
 
-    fun onEvent(socket: MySocket, event: SocketEvent<String>) {
+    override fun handle(socket: MySocket, event: SocketEvent) {
         val route = this.routes.find { it.endpoint == event.endpoint }
-        route?.also { it.callback(socket, event.body) }
+        route?.also { it.callback.handle(socket, event) }
     }
 
 }
