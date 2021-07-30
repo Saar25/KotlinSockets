@@ -1,7 +1,6 @@
 package me.saar.sockets.chat.server
 
 import me.saar.sockets.MySocket
-import me.saar.sockets.chat.Config
 import me.saar.sockets.controller.ControllerAnalyzer
 import me.saar.sockets.socketListen
 import java.net.ServerSocket
@@ -69,9 +68,11 @@ class Server(port: Int) {
     }
 
     private fun close() {
-        notifyClients(Config.SHUTDOWN)
+        if (!socket.isClosed) {
+            ChatStore.shutdown()
 
-        this.socket.close()
-        this.clients.forEach { it.close() }
+            this.socket.close()
+            this.clients.forEach { it.close() }
+        }
     }
 }

@@ -1,9 +1,9 @@
 package me.saar.sockets.chat.client
 
 import me.saar.sockets.MySocket
-import me.saar.sockets.chat.Config
 import me.saar.sockets.chat.shared.ChatLeave
 import me.saar.sockets.chat.shared.ChatMessage
+import me.saar.sockets.chat.shared.ChatShutdown
 import java.net.Socket
 import java.net.SocketException
 import kotlin.concurrent.thread
@@ -36,11 +36,12 @@ class Client(host: String, port: Int) {
     private val inputThread = thread(start = false) {
         try {
             var message = this.socket.read()
-            while (!message.equals(Config.SHUTDOWN)) {
+            while (!message.equals(ChatShutdown.toMessage())) {
                 println(message)
 
                 message = this.socket.read()
             }
+            println(message)
         } catch (e: SocketException) {
             println("Goodbye")
         } catch (e: Exception) {
