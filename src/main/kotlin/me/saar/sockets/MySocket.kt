@@ -15,6 +15,8 @@ class MySocket(private val socket: Socket) {
 
     fun send(message: String) = this.output.println(message)
 
+    fun send(event: SocketEvent) = this.output.println(event.toString())
+
     fun read(): String? = this.input.readLine()
 
     fun close() = this.socket.close()

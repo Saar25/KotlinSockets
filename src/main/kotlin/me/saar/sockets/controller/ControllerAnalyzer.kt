@@ -1,21 +1,15 @@
 package me.saar.sockets.controller
 
-import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Klaxon
 import me.saar.sockets.MySocket
 import me.saar.sockets.SocketRouter
-import java.io.StringReader
+import me.saar.sockets.parseFromClass
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.jvmErasure
 
 private val klaxon = Klaxon()
-
-private fun Klaxon.parse(json: String, kClass: KClass<out Any>): Any {
-    val jsonObject = parser(kClass).parse(StringReader(json)) as JsonObject
-    return fromJsonObject(jsonObject, kClass.java, kClass)
-}
 
 private class ControllerEndpoint(val endpoint: String, val function: KFunction<*>) {
     operator fun component1() = this.endpoint
@@ -35,7 +29,7 @@ private fun parameters(function: KFunction<*>, controller: Controller, socket: M
         when {
             p.index == 0 -> controller
             p.annotations.any { a -> a is Socket } -> socket
-            p.annotations.any { a -> a is Body } -> klaxon.parse(data, p.type.jvmErasure)
+            p.annotations.any { a -> a is Body } -> klaxon.parseFromClass(data, p.type.jvmErasure)
             else -> null
         }
     }

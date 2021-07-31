@@ -2,6 +2,7 @@ package me.saar.sockets.chat.server
 
 import me.saar.sockets.IdProvider
 import me.saar.sockets.MySocket
+import me.saar.sockets.SocketService
 import me.saar.sockets.chat.shared.ChatEnter
 import me.saar.sockets.chat.shared.ChatLeave
 import me.saar.sockets.chat.shared.ChatMessage
@@ -24,8 +25,9 @@ class ServerController : Controller {
         val id = idProvider.next()
         client.send(id)
 
+        val socketService = SocketService(client)
         this.subscriptions += (id to ChatStore.chatObservable.subscribe { e ->
-            client.send(e.toMessage())
+            socketService.send(e.endpoint, e)
         })
 
         ChatStore.clientEntered(ChatEnter(id))

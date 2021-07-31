@@ -1,9 +1,13 @@
 package me.saar.sockets.chat.client
 
+import com.beust.klaxon.Klaxon
 import me.saar.sockets.MySocket
+import me.saar.sockets.SocketEvent
 import me.saar.sockets.chat.shared.ChatLeave
 import me.saar.sockets.chat.shared.ChatMessage
 import me.saar.sockets.chat.shared.ChatShutdown
+import me.saar.sockets.chat.shared.parseType
+import me.saar.sockets.parseFromClass
 import java.net.Socket
 import java.net.SocketException
 import kotlin.concurrent.thread
@@ -35,13 +39,17 @@ class Client(host: String, port: Int) {
 
     private val inputThread = thread(start = false) {
         try {
-            var message = this.socket.read()
-            while (!message.equals(ChatShutdown.toMessage())) {
-                println(message)
+            var event = this.socket.read()?.let { SocketEvent.parse(it) }
+            while (event != null && event.endpoint != ChatShutdown.endpoint) {
+                parseType(event)?.let { type ->
+                    val chatEvent = Klaxon().parseFromClass(event!!.body, type)
 
-                message = this.socket.read()
+                    println(chatEvent.toMessage())
+                }
+
+                event = this.socket.read()?.let { SocketEvent.parse(it) }
             }
-            println(message)
+            println(event)
         } catch (e: SocketException) {
             println("Goodbye")
         } catch (e: Exception) {
@@ -62,17 +70,15 @@ class Client(host: String, port: Int) {
     }
 
 
-    fun start() {
-        thread {
-            this.clientService.join()
+    fun start() = thread {
+        this.clientService.join()
 
-            this.clientId = this.socket.read()!!.toInt()
-            println("I am ${this.clientId}")
+        this.clientId = this.socket.read()!!.toInt()
+        println("I am ${this.clientId}")
 
 
-            this.outputThread.start()
-            this.inputThread.start()
-        }
+        this.outputThread.start()
+        this.inputThread.start()
     }
 
     private fun close() {

@@ -5,6 +5,8 @@ class SocketEvent(val endpoint: String, val body: String) {
     operator fun component1() = this.endpoint
     operator fun component2() = this.body
 
+    override fun toString() = "$endpoint $body"
+
     companion object {
         private fun String.splitAtIndex(index: Int): Pair<String, String> {
             return Pair(substring(0, index), substring(index + 1))
