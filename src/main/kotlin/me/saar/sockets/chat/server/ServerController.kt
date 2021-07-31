@@ -6,13 +6,14 @@ import me.saar.sockets.SocketService
 import me.saar.sockets.chat.shared.ChatEnter
 import me.saar.sockets.chat.shared.ChatLeave
 import me.saar.sockets.chat.shared.ChatMessage
+import me.saar.sockets.chat.shared.ChatStore
 import me.saar.sockets.controller.Body
 import me.saar.sockets.controller.Controller
 import me.saar.sockets.controller.Endpoint
 import me.saar.sockets.controller.Socket
 import me.saar.sockets.reactive.Subscription
 
-class ServerController : Controller {
+class ServerController(private val chatStore: ChatStore) : Controller {
 
     private val subscriptions = mutableMapOf<Int, Subscription>()
 
@@ -26,16 +27,16 @@ class ServerController : Controller {
         client.send(id)
 
         val socketService = SocketService(client)
-        this.subscriptions += (id to ChatStore.chatObservable.subscribe { e ->
+        this.subscriptions += (id to chatStore.chatObservable.subscribe { e ->
             socketService.send(e.eventType, e)
         })
 
-        ChatStore.clientEntered(ChatEnter(id))
+        chatStore.clientEntered(ChatEnter(id))
     }
 
     @Endpoint
     fun message(@Body message: ChatMessage) {
-        ChatStore.clientMessage(message)
+        chatStore.clientMessage(message)
     }
 
     @Endpoint
@@ -44,6 +45,6 @@ class ServerController : Controller {
 
         this.subscriptions[leave.clientId]?.unsubscribe()
 
-        ChatStore.clientLeft(leave)
+        chatStore.clientLeft(leave)
     }
 }
