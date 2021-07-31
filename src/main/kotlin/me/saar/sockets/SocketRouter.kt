@@ -13,9 +13,9 @@ class SocketRouter : SocketEventHandler {
         this.routes += SocketRoute(endpoint, callback)
     }
 
-    override fun handle(socket: MySocket, event: SocketEvent) {
-        val route = this.routes.find { it.endpoint == event.endpoint }
-        route?.also { it.callback.handle(socket, event) }
+    override fun handle(input: SocketRouteInput) {
+        val route = this.routes.find { it.endpoint == input.event.endpoint }
+        route?.also { it.callback.handle(input) }
     }
 
 }

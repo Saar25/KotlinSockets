@@ -33,7 +33,9 @@ class ServerSocketApp(private val socketRouter: SocketRouter) {
             val client = MySocket(socket)
 
             socketListen(client) {
-                this.socketRouter.handle(client, it)
+                val input = SocketRouteInput(client, it)
+                this.socketRouter.handle(input)
+
                 println("Request to '${it.endpoint}', with value '${it.body}'")
             }
 
