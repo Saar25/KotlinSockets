@@ -27,7 +27,7 @@ class ServerController : Controller {
 
         val socketService = SocketService(client)
         this.subscriptions += (id to ChatStore.chatObservable.subscribe { e ->
-            socketService.send(e.endpoint, e)
+            socketService.send(e.eventType, e)
         })
 
         ChatStore.clientEntered(ChatEnter(id))

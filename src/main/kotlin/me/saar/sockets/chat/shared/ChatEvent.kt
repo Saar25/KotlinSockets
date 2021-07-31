@@ -5,14 +5,14 @@ import me.saar.sockets.SocketEvent
 import kotlin.reflect.KClass
 
 interface ChatEvent {
-    val endpoint: String
+    val eventType: String
     fun toMessage(): String
 }
 
 data class ChatEnter(val clientId: Int) : ChatEvent {
 
     @Json(ignored = true)
-    override val endpoint: String = "enter"
+    override val eventType: String = "enter"
 
     override fun toMessage(): String = "Client $clientId has entered the chat"
 }
@@ -20,7 +20,7 @@ data class ChatEnter(val clientId: Int) : ChatEvent {
 data class ChatLeave(val clientId: Int) : ChatEvent {
 
     @Json(ignored = true)
-    override val endpoint: String = "leave"
+    override val eventType: String = "leave"
 
     override fun toMessage(): String = "Client $clientId has left the chat"
 }
@@ -28,7 +28,7 @@ data class ChatLeave(val clientId: Int) : ChatEvent {
 data class ChatMessage(val clientId: Int, val content: String) : ChatEvent {
 
     @Json(ignored = true)
-    override val endpoint: String = "message"
+    override val eventType: String = "message"
 
     override fun toMessage(): String = "Client $clientId: $content"
 }
@@ -36,7 +36,7 @@ data class ChatMessage(val clientId: Int, val content: String) : ChatEvent {
 data class ChatServerMessage(val content: String) : ChatEvent {
 
     @Json(ignored = true)
-    override val endpoint: String = "server_message"
+    override val eventType: String = "server_message"
 
     override fun toMessage(): String = "Server: $content"
 }
@@ -44,7 +44,7 @@ data class ChatServerMessage(val content: String) : ChatEvent {
 object ChatShutdown : ChatEvent {
 
     @Json(ignored = true)
-    override val endpoint: String = "shutdown"
+    override val eventType: String = "shutdown"
 
     override fun toMessage(): String = "Shutdown"
 }

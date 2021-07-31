@@ -3,6 +3,7 @@ package me.saar.sockets.controller
 import com.beust.klaxon.Klaxon
 import me.saar.sockets.MySocket
 import me.saar.sockets.SocketRouter
+import me.saar.sockets.parseFieldFromClass
 import me.saar.sockets.parseFromClass
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -24,13 +25,28 @@ private fun findControllerEndpoints(controller: KClass<out Controller>): List<Co
     }
 }
 
-private fun parameters(function: KFunction<*>, controller: Controller, socket: MySocket, data: String) =
+private fun parameters(function: KFunction<*>, controller: Controller): List<(MySocket, String) -> Any?> =
     function.parameters.map { p ->
         when {
-            p.index == 0 -> controller
-            p.annotations.any { a -> a is Socket } -> socket
-            p.annotations.any { a -> a is Body } -> klaxon.parseFromClass(data, p.type.jvmErasure)
-            else -> null
+            p.index == 0 -> {
+                return@map { _, _ -> controller }
+            }
+            p.annotations.any { a -> a is Socket } -> {
+                return@map { socket, _ -> socket }
+            }
+            p.annotations.any { a -> a is Body } -> {
+                val kClass = p.type.jvmErasure
+
+                return@map { _, data -> klaxon.parseFromClass(data, kClass) }
+            }
+            p.annotations.any { a -> a is BodyField } -> {
+                val kClass = p.type.jvmErasure
+                val annotation = p.annotations.find { a -> a is BodyField } as BodyField
+                val bodyField = annotation.name.ifEmpty { p.name!! }
+
+                return@map { _, data -> klaxon.parseFieldFromClass(data, bodyField, kClass) }
+            }
+            else -> { _: MySocket, _: String -> null }
         }
     }
 
@@ -38,10 +54,10 @@ fun Controller.buildRouter() = SocketRouter().apply {
     val controllerEndpoints = findControllerEndpoints(this@buildRouter::class)
 
     for ((endpoint, function) in controllerEndpoints) {
-        route(endpoint) { socket, event ->
-            val parameters = parameters(function, this@buildRouter, socket, event.body)
+        val parameters = parameters(function, this@buildRouter)
 
-            function.call(*parameters.toTypedArray())
+        route(endpoint) { socket, event ->
+            function.call(*parameters.map { it(socket, event.body) }.toTypedArray())
         }
     }
 }

@@ -40,7 +40,7 @@ class Client(host: String, port: Int) {
     private val inputThread = thread(start = false) {
         try {
             var event = this.socket.read()?.let { SocketEvent.parse(it) }
-            while (event != null && event.endpoint != ChatShutdown.endpoint) {
+            while (event != null && event.endpoint != ChatShutdown.eventType) {
                 parseType(event)?.let { type ->
                     val chatEvent = Klaxon().parseFromClass(event!!.body, type)
 
