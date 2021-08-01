@@ -29,17 +29,20 @@ class ServerSocketApp(private val socketRouter: SocketRouter) {
     private fun loop(serverSocket: ServerSocket) {
         while (!serverSocket.isClosed) {
             val socket = serverSocket.accept()
+            println(socket.inetAddress)
 
             val client = MySocket(socket)
-
-            socketListen(client) {
-                val input = SocketRouteInput(client, it)
-                this.socketRouter.handle(input)
-
-                println("Request to '${it.endpoint}', with value '${it.body}'")
-            }
-
             this.clients += client
+
+            thread {
+                socketListen(client) {
+                    val input = SocketRouteInput(client, it)
+                    this.socketRouter.handle(input)
+
+                    println("Request to '${it.endpoint}', with value '${it.body}'")
+                }
+                this.clients -= client
+            }
         }
     }
 

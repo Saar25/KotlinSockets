@@ -5,7 +5,13 @@ import me.saar.sockets.controller.Body
 import me.saar.sockets.controller.Controller
 import me.saar.sockets.controller.Endpoint
 
-class ClientController(private val chatStore: ChatStore) : Controller {
+class ClientController(private val chatStore: ChatStore, private val authService: AuthService) : Controller {
+
+    @Endpoint
+    fun verify(@Body verify: ChatVerify) {
+        this.chatStore.clientVerified(verify)
+        this.authService.clientId = verify.clientId
+    }
 
     @Endpoint
     fun enter(@Body enter: ChatEnter) = this.chatStore.clientEntered(enter)

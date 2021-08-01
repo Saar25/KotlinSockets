@@ -3,10 +3,7 @@ package me.saar.sockets.chat.server
 import me.saar.sockets.IdProvider
 import me.saar.sockets.MySocket
 import me.saar.sockets.SocketService
-import me.saar.sockets.chat.shared.ChatEnter
-import me.saar.sockets.chat.shared.ChatLeave
-import me.saar.sockets.chat.shared.ChatMessage
-import me.saar.sockets.chat.shared.ChatStore
+import me.saar.sockets.chat.shared.*
 import me.saar.sockets.controller.Body
 import me.saar.sockets.controller.Controller
 import me.saar.sockets.controller.Endpoint
@@ -23,20 +20,21 @@ class ServerController(private val chatStore: ChatStore) : Controller {
 
     @Endpoint
     fun join(@Socket client: MySocket) {
-        val id = idProvider.next()
-        client.send(id)
-
         val socketService = SocketService(client)
-        this.subscriptions += (id to chatStore.chatObservable.subscribe { e ->
+
+        val id = idProvider.next()
+        socketService.send("verify", ChatVerify(id))
+
+        this.subscriptions += (id to this.chatStore.chatObservable.subscribe { e ->
             socketService.send(e.eventType, e)
         })
 
-        chatStore.clientEntered(ChatEnter(id))
+        this.chatStore.clientEntered(ChatEnter(id))
     }
 
     @Endpoint
     fun message(@Body message: ChatMessage) {
-        chatStore.clientMessage(message)
+        this.chatStore.clientMessage(message)
     }
 
     @Endpoint
@@ -45,6 +43,6 @@ class ServerController(private val chatStore: ChatStore) : Controller {
 
         this.subscriptions[leave.clientId]?.unsubscribe()
 
-        chatStore.clientLeft(leave)
+        this.chatStore.clientLeft(leave)
     }
 }

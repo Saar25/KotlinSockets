@@ -9,6 +9,14 @@ interface ChatEvent {
     fun toMessage(): String
 }
 
+data class ChatVerify(val clientId: Int) : ChatEvent {
+
+    @Json(ignored = true)
+    override val eventType: String = "verify"
+
+    override fun toMessage(): String = "Server granted you with id $clientId"
+}
+
 data class ChatEnter(val clientId: Int) : ChatEvent {
 
     @Json(ignored = true)

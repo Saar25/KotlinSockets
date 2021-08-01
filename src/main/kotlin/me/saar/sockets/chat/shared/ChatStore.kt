@@ -8,16 +8,18 @@ class ChatStore {
 
     private val chat: Subject<ChatEvent> = ReplaySubject()
 
-    val chatObservable: Observable<ChatEvent> get() = chat
+    val chatObservable: Observable<ChatEvent> get() = this.chat
 
-    fun serverMessage(chatServerMessage: ChatServerMessage) = chat.next(chatServerMessage)
+    fun serverMessage(chatServerMessage: ChatServerMessage) = this.chat.next(chatServerMessage)
 
-    fun clientMessage(chatMessage: ChatMessage) = chat.next(chatMessage)
+    fun clientMessage(chatMessage: ChatMessage) = this.chat.next(chatMessage)
 
-    fun clientEntered(chatEnter: ChatEnter) = chat.next(chatEnter)
+    fun clientEntered(chatEnter: ChatEnter) = this.chat.next(chatEnter)
 
-    fun clientLeft(chatLeave: ChatLeave) = chat.next(chatLeave)
+    fun clientVerified(chatVerify: ChatVerify) = this.chat.next(chatVerify)
 
-    fun shutdown() = chat.next(ChatShutdown)
+    fun clientLeft(chatLeave: ChatLeave) = this.chat.next(chatLeave)
+
+    fun shutdown() = this.chat.next(ChatShutdown)
 
 }

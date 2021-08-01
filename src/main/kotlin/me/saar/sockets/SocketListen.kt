@@ -1,9 +1,8 @@
 package me.saar.sockets
 
 import java.net.SocketException
-import kotlin.concurrent.thread
 
-fun socketListen(client: MySocket, eventEmitter: (SocketEvent) -> Unit) = thread {
+inline fun socketListen(client: MySocket, crossinline eventEmitter: (SocketEvent) -> Unit) {
     try {
         while (!client.isClosed) {
             client.read()?.let {
