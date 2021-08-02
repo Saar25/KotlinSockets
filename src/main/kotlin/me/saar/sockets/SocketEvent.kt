@@ -7,11 +7,16 @@ class SocketEvent(val endpoint: String, val body: String) {
 
     companion object {
         fun parse(data: String): SocketEvent {
-            val separate = data.indexOf(' ')
+            val index = data.indexOf(' ')
 
-            val (endpoint, body) = data.splitAtIndex(separate)
+            return if (index == -1) {
+                SocketEvent(data, "")
+            } else {
+                val (endpoint, body) = data.splitAtIndex(index)
 
-            return SocketEvent(endpoint, body)
+                SocketEvent(endpoint, body)
+            }
+
         }
     }
 }
