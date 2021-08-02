@@ -1,34 +1,24 @@
 package me.saar.sockets
 
-import java.net.SocketException
 import kotlin.concurrent.thread
 
 class ClientSocketApp(private val socketRouter: SocketRouter) : AutoCloseable {
 
     private var clientSocket: MySocket? = null
 
-    fun start(host: String, port: Int, callback: (SocketService) -> Unit = {}) {
+    fun start(host: String, port: Int, callback: (SocketService) -> Unit) = thread {
         this.clientSocket = MySocket(host, port)
-        callback(SocketService(this.clientSocket!!))
+        callback.invoke(SocketService(this.clientSocket!!))
 
-        thread {
-            this.clientSocket?.use {
-                try {
-                    loop(it)
-                } catch (e: SocketException) {
-                    println("Goodbye")
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+        socketEventSubject(this.clientSocket!!).subscribe(
+            onEvent = {
+                val input = SocketRouteInput(this.clientSocket!!, it)
+                this.socketRouter.handle(input)
+            },
+            onClose = {
+                println("Goodbye")
             }
-        }
-    }
-
-    private fun loop(socket: MySocket) {
-        socketListen(socket) {
-            val input = SocketRouteInput(socket, it)
-            this.socketRouter.handle(input)
-        }
+        )
     }
 
     val isClosed: Boolean get() = this.clientSocket?.isClosed == true

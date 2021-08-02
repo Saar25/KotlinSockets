@@ -1,7 +1,6 @@
 package me.saar.sockets
 
 import java.net.ServerSocket
-import java.net.SocketException
 import kotlin.concurrent.thread
 
 class ServerSocketApp(private val socketRouter: SocketRouter) {
@@ -9,41 +8,33 @@ class ServerSocketApp(private val socketRouter: SocketRouter) {
     private var serverSocket: ServerSocket? = null
     private val clients = mutableListOf<MySocket>()
 
-    fun start(port: Int, callback: () -> Unit = {}) {
+    fun start(port: Int, callback: () -> Unit) = thread {
         this.serverSocket = ServerSocket(port)
-        callback()
+        callback.invoke()
 
-        thread {
-            this.serverSocket?.use {
-                try {
-                    loop(it)
-                } catch (e: SocketException) {
-                    println("Goodbye")
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
+        whileSocketIsOpen(this.serverSocket!!) {
+            val socket = this.serverSocket!!.accept()
+            val client = MySocket(socket)
+            onSocketAccepted(client)
         }
+
+        println("Goodbye")
     }
 
-    private fun loop(serverSocket: ServerSocket) {
-        while (!serverSocket.isClosed) {
-            val socket = serverSocket.accept()
-            println(socket.inetAddress)
+    private fun onSocketAccepted(client: MySocket) {
+        this.clients += client
 
-            val client = MySocket(socket)
-            this.clients += client
+        socketEventSubject(client).subscribe(
+            onEvent = {
+                val input = SocketRouteInput(client, it)
+                this.socketRouter.handle(input)
 
-            thread {
-                socketListen(client) {
-                    val input = SocketRouteInput(client, it)
-                    this.socketRouter.handle(input)
-
-                    println("Request to '${it.endpoint}', with value '${it.body}'")
-                }
+                println("Request to '${it.endpoint}', with value '${it.body}'")
+            },
+            onClose = {
                 this.clients -= client
             }
-        }
+        )
     }
 
     fun close() {
