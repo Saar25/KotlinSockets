@@ -1,3 +1,6 @@
 package me.saar.sockets.reactive
 
-fun interface Subscriber<T> : (T) -> Unit
+data class Subscriber<T>(
+    val onEvent: (T) -> Unit = {},
+    val onClose: () -> Unit = {},
+)

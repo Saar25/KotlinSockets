@@ -3,13 +3,13 @@ package me.saar.sockets.reactive
 class BehaviorSubject<T>(private var value: T) : Subject<T>() {
 
     override fun next(value: T) {
-        super.next(value)
-
         this.value = value
+
+        super.next(value)
     }
 
     override fun subscribe(subscriber: Subscriber<T>): Subscription {
-        subscriber(this.value)
+        subscriber.onEvent(this.value)
 
         return super.subscribe(subscriber)
     }

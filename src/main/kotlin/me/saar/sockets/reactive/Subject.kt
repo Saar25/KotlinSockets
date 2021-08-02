@@ -5,7 +5,11 @@ open class Subject<T> : Observable<T> {
     private val subscribers = mutableListOf<Subscriber<T>>()
 
     open fun next(value: T) {
-        this.subscribers.forEach { it(value) }
+        this.subscribers.forEach { it.onEvent(value) }
+    }
+
+    open fun close() {
+        this.subscribers.forEach { it.onClose() }
     }
 
     override fun subscribe(subscriber: Subscriber<T>): Subscription {
