@@ -1,27 +1,25 @@
 package me.saar.sockets
 
-import java.net.ServerSocket
 import kotlin.concurrent.thread
 
 class ServerSocketApp(private val socketRouter: SocketRouter) {
 
-    private var serverSocket: ServerSocket? = null
-    private val clients = mutableListOf<MySocket>()
+    private var server: Server? = null
+    private val clients = mutableListOf<Client>()
 
     fun start(port: Int, callback: () -> Unit) = thread {
-        this.serverSocket = ServerSocket(port)
+        this.server = Server(port)
         callback.invoke()
 
-        whileSocketIsOpen(this.serverSocket!!) {
-            val socket = this.serverSocket!!.accept()
-            val client = MySocket(socket)
+        whileNotClosed(this.server!!) {
+            val client = this.server!!.accept()
             onSocketAccepted(client)
         }
 
         println("Goodbye")
     }
 
-    private fun onSocketAccepted(client: MySocket) {
+    private fun onSocketAccepted(client: Client) {
         this.clients += client
 
         socketEventSubject(client).subscribe(
@@ -38,7 +36,7 @@ class ServerSocketApp(private val socketRouter: SocketRouter) {
     }
 
     fun close() {
-        this.serverSocket?.close()
+        this.server?.close()
         this.clients.forEach { it.close() }
     }
 }

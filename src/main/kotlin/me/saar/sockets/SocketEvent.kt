@@ -5,6 +5,8 @@ class SocketEvent(val endpoint: String, val body: String) {
     operator fun component1() = this.endpoint
     operator fun component2() = this.body
 
+    override fun toString() = "$endpoint $body"
+
     companion object {
         fun parse(data: String): SocketEvent {
             val index = data.indexOf(' ')

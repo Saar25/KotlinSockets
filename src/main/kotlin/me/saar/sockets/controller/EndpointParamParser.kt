@@ -1,7 +1,7 @@
 package me.saar.sockets.controller
 
 import com.beust.klaxon.Klaxon
-import me.saar.sockets.MySocket
+import me.saar.sockets.Client
 import me.saar.sockets.SocketRouteInput
 import me.saar.sockets.parseFieldFromClass
 import me.saar.sockets.parseFromClass
@@ -20,8 +20,8 @@ val socketParamParser = object : EndpointParamParser {
         return parameter.annotations.any { it is Socket }
     }
 
-    override fun parse(parameter: KParameter, input: SocketRouteInput): MySocket {
-        return input.socket
+    override fun parse(parameter: KParameter, input: SocketRouteInput): Client {
+        return input.client
     }
 }
 

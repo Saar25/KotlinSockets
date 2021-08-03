@@ -1,3 +1,3 @@
 package me.saar.sockets
 
-data class SocketRouteInput(val socket: MySocket, val event: SocketEvent)
+data class SocketRouteInput(val client: Client, val event: SocketEvent)

@@ -1,7 +1,7 @@
 package me.saar.sockets.chat.server
 
+import me.saar.sockets.Client
 import me.saar.sockets.IdProvider
-import me.saar.sockets.MySocket
 import me.saar.sockets.SocketService
 import me.saar.sockets.chat.shared.*
 import me.saar.sockets.controller.Body
@@ -19,7 +19,7 @@ class ServerController(private val chatStore: ChatStore) : Controller {
     }
 
     @Endpoint
-    fun join(@Socket client: MySocket) {
+    fun join(@Socket client: Client) {
         val socketService = SocketService(client)
 
         val id = idProvider.next()
@@ -38,7 +38,7 @@ class ServerController(private val chatStore: ChatStore) : Controller {
     }
 
     @Endpoint
-    fun exit(@Socket client: MySocket, @Body leave: ChatLeave) {
+    fun exit(@Socket client: Client, @Body leave: ChatLeave) {
         client.close()
 
         this.subscriptions[leave.clientId]?.unsubscribe()

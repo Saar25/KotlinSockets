@@ -5,7 +5,7 @@ import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.Socket
 
-class MySocket(private val socket: Socket) : AutoCloseable {
+class Client(private val socket: Socket) : CloseableState {
 
     constructor(host: String, port: Int) : this(Socket(host, port))
 
@@ -13,15 +13,12 @@ class MySocket(private val socket: Socket) : AutoCloseable {
 
     private val input = BufferedReader(InputStreamReader(this.socket.getInputStream()))
 
-    fun send(message: Int) = this.output.println(message)
+    fun readEvent() = this.input.readLine()?.let { SocketEvent.parse(it) }
 
-    fun send(message: String) = this.output.println(message)
+    fun sendEvent(event: SocketEvent) = this.output.println(event.toString())
 
-    fun send(event: SocketEvent) = this.output.println(event.toString())
-
-    fun read(): String? = this.input.readLine()
+    override val isClosed: Boolean get() = this.socket.isClosed
 
     override fun close() = this.socket.close()
 
-    val isClosed: Boolean get() = this.socket.isClosed
 }

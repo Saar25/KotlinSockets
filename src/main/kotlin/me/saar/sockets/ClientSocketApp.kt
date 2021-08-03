@@ -4,15 +4,15 @@ import kotlin.concurrent.thread
 
 class ClientSocketApp(private val socketRouter: SocketRouter) : AutoCloseable {
 
-    private var clientSocket: MySocket? = null
+    private var client: Client? = null
 
     fun start(host: String, port: Int, callback: (SocketService) -> Unit) = thread {
-        this.clientSocket = MySocket(host, port)
-        callback.invoke(SocketService(this.clientSocket!!))
+        this.client = Client(host, port)
+        callback.invoke(SocketService(this.client!!))
 
-        socketEventSubject(this.clientSocket!!).subscribe(
+        socketEventSubject(this.client!!).subscribe(
             onEvent = {
-                val input = SocketRouteInput(this.clientSocket!!, it)
+                val input = SocketRouteInput(this.client!!, it)
                 this.socketRouter.handle(input)
             },
             onClose = {
@@ -21,9 +21,9 @@ class ClientSocketApp(private val socketRouter: SocketRouter) : AutoCloseable {
         )
     }
 
-    val isClosed: Boolean get() = this.clientSocket?.isClosed == true
+    val isClosed: Boolean get() = this.client?.isClosed == true
 
     override fun close() {
-        this.clientSocket?.close()
+        this.client?.close()
     }
 }
