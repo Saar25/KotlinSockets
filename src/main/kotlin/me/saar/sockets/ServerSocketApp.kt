@@ -4,18 +4,18 @@ import kotlin.concurrent.thread
 
 class ServerSocketApp(private val socketRouter: SocketRouter) {
 
-    private var server: Server? = null
     private val clients = mutableListOf<Client>()
 
-    fun start(port: Int, callback: () -> Unit) = thread {
-        this.server = Server(port)
-        callback.invoke()
+    fun start(port: Int, callback: (Server) -> Unit) = thread {
+        val server = Server(port)
+        callback.invoke(server)
 
-        whileNotClosed(this.server!!) {
-            val client = this.server!!.accept()
+        whileNotClosed(server) {
+            val client = server.accept()
             onSocketAccepted(client)
         }
 
+        this.clients.forEach { it.close() }
         println("Goodbye")
     }
 
@@ -33,10 +33,5 @@ class ServerSocketApp(private val socketRouter: SocketRouter) {
                 this.clients -= client
             }
         )
-    }
-
-    fun close() {
-        this.server?.close()
-        this.clients.forEach { it.close() }
     }
 }

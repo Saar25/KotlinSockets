@@ -2,7 +2,6 @@ package me.saar.sockets.chat.server
 
 import me.saar.sockets.Client
 import me.saar.sockets.IdProvider
-import me.saar.sockets.SocketService
 import me.saar.sockets.chat.shared.*
 import me.saar.sockets.controller.Body
 import me.saar.sockets.controller.Controller
@@ -20,13 +19,11 @@ class ServerController(private val chatStore: ChatStore) : Controller {
 
     @Endpoint
     fun join(@Socket client: Client) {
-        val socketService = SocketService(client)
-
         val id = idProvider.next()
-        socketService.send("verify", ChatVerify(id))
+        client.sendJson("verify", ChatVerify(id))
 
         this.subscriptions += (id to this.chatStore.chatObservable.subscribe { e ->
-            socketService.send(e.eventType, e)
+            client.sendJson(e.eventType, e)
         })
 
         this.chatStore.clientEntered(ChatEnter(id))

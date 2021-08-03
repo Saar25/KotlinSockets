@@ -32,9 +32,9 @@ fun main(args: Array<String>) {
 
     val serverSocketApp = ServerSocketApp(socketRouter)
 
-    serverSocketApp.start(Config.PORT) {
+    serverSocketApp.start(Config.PORT) { server ->
         println("Server started on port ${Config.PORT}")
 
-        inputThread { serverSocketApp.close() }
+        inputThread { server.close() }
     }
 }

@@ -34,8 +34,8 @@ fun main(args: Array<String>) {
 
     val clientSocketApp = ClientSocketApp(clientRouter)
 
-    clientSocketApp.start(Config.HOST, Config.PORT) { socketService ->
-        val clientService = ClientService(socketService, authService)
+    clientSocketApp.start(Config.HOST, Config.PORT) { client ->
+        val clientService = ClientService(client, authService)
 
         clientService.join()
 
@@ -46,7 +46,7 @@ fun main(args: Array<String>) {
                 }
                 "exit" -> {
                     clientService.exit()
-                    clientSocketApp.close()
+                    client.close()
                 }
                 else -> {
                     println("Command not found")
