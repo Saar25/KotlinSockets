@@ -1,9 +1,6 @@
 package me.saar.sockets
 
-class SocketEvent(val endpoint: String, val body: String) {
-
-    operator fun component1() = this.endpoint
-    operator fun component2() = this.body
+data class SocketEvent(val endpoint: String, val body: String) {
 
     override fun toString() = "$endpoint $body"
 
