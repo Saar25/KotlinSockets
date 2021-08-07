@@ -4,7 +4,7 @@ import me.saar.sockets.ServerSocketApp
 import me.saar.sockets.chat.server.ServerController
 import me.saar.sockets.chat.shared.ChatServerMessage
 import me.saar.sockets.chat.shared.ChatStore
-import me.saar.sockets.controller.buildRouter
+import me.saar.sockets.controller.buildSocketRouter
 import kotlin.concurrent.thread
 
 private val chatStore = ChatStore()
@@ -28,7 +28,7 @@ private fun inputThread(callback: () -> Unit) = thread {
 fun main(args: Array<String>) {
     val serverController = ServerController(chatStore)
 
-    val socketRouter = serverController.buildRouter()
+    val socketRouter = serverController.buildSocketRouter()
 
     val serverSocketApp = ServerSocketApp(socketRouter)
 

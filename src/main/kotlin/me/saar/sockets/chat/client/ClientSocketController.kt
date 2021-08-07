@@ -1,9 +1,9 @@
 package me.saar.sockets.chat.client
 
+import me.saar.kouter.controller.Controller
+import me.saar.kouter.controller.Endpoint
 import me.saar.sockets.chat.shared.*
 import me.saar.sockets.controller.Body
-import me.saar.sockets.controller.Controller
-import me.saar.sockets.controller.Endpoint
 
 class ClientSocketController(private val chatStore: ChatStore, private val authService: AuthService) : Controller {
 

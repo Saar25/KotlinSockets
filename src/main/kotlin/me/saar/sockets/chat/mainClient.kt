@@ -9,7 +9,7 @@ import me.saar.sockets.chat.client.ClientService
 import me.saar.sockets.chat.client.ClientSocketController
 import me.saar.sockets.chat.shared.ChatStore
 import me.saar.sockets.controller.buildConsoleRouter
-import me.saar.sockets.controller.buildRouter
+import me.saar.sockets.controller.buildSocketRouter
 
 private fun buildConsoleApp(client: Client, clientService: ClientService): ConsoleApp {
     val controller = ClientConsoleController(client, clientService)
@@ -22,7 +22,7 @@ private fun buildConsoleApp(client: Client, clientService: ClientService): Conso
 private fun buildSocketApp(chatStore: ChatStore, authService: AuthService): ClientSocketApp {
     val socketController = ClientSocketController(chatStore, authService)
 
-    val clientRouter = socketController.buildRouter()
+    val clientRouter = socketController.buildSocketRouter()
 
     return ClientSocketApp(clientRouter)
 }
