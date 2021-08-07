@@ -1,8 +1,10 @@
 package me.saar.sockets
 
+import me.saar.kouter.RouteInput
+import me.saar.kouter.Router
 import kotlin.concurrent.thread
 
-class ServerSocketApp(private val socketRouter: SocketRouter) {
+class ServerSocketApp(private val socketRouter: Router<SocketRouteInput>) {
 
     private val clients = mutableListOf<Client>()
 
@@ -25,7 +27,7 @@ class ServerSocketApp(private val socketRouter: SocketRouter) {
         socketEventSubject(client).subscribe(
             onEvent = {
                 val input = SocketRouteInput(client, it)
-                this.socketRouter.handle(input)
+                this.socketRouter.handle(RouteInput(input.event.endpoint, input))
 
                 println("Request to '${it.endpoint}', with value '${it.body}'")
             },

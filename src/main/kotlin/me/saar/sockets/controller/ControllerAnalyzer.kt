@@ -1,7 +1,7 @@
 package me.saar.sockets.controller
 
+import me.saar.kouter.Router
 import me.saar.sockets.SocketRouteInput
-import me.saar.sockets.SocketRouter
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.memberFunctions
@@ -30,14 +30,14 @@ private fun parameters(function: KFunction<*>, controller: Controller): List<(So
         }
     }
 
-fun Controller.buildRouter() = SocketRouter().apply {
+fun Controller.buildRouter() = Router<SocketRouteInput>().apply {
     val controllerEndpoints = findControllerEndpoints(this@buildRouter::class)
 
     for ((endpoint, function) in controllerEndpoints) {
         val parameters = parameters(function, this@buildRouter)
 
         route(endpoint) { input ->
-            function.call(*parameters.map { it(input) }.toTypedArray())
+            function.call(*parameters.map { it(input.data) }.toTypedArray())
         }
     }
 }
