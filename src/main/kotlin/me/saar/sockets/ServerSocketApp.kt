@@ -18,7 +18,7 @@ class ServerSocketApp(private val socketRouter: Router<SocketRouteInput>) {
         }
 
         this.clients.forEach { it.close() }
-        println("Goodbye")
+        println("ServerSocketApp Goodbye")
     }
 
     private fun onSocketAccepted(client: Client) {

@@ -1,59 +1,46 @@
 package me.saar.sockets.chat
 
+import me.saar.sockets.Client
 import me.saar.sockets.ClientSocketApp
+import me.saar.sockets.ConsoleApp
 import me.saar.sockets.chat.client.AuthService
-import me.saar.sockets.chat.client.ClientController
+import me.saar.sockets.chat.client.ClientConsoleController
 import me.saar.sockets.chat.client.ClientService
+import me.saar.sockets.chat.client.ClientSocketController
 import me.saar.sockets.chat.shared.ChatStore
+import me.saar.sockets.controller.buildConsoleRouter
 import me.saar.sockets.controller.buildRouter
-import me.saar.sockets.splitAtIndex
-import kotlin.concurrent.thread
 
-private fun consoleInputThread(callback: (String, String) -> Boolean) = thread(start = true) {
-    var shouldContinue = true
-    while (shouldContinue) {
-        val input = readLine()!!
+private fun buildConsoleApp(client: Client, clientService: ClientService): ConsoleApp {
+    val controller = ClientConsoleController(client, clientService)
 
-        val index = input.indexOf(' ')
-        shouldContinue = if (index == -1) {
-            callback(input, "")
-        } else {
-            val (command, value) = input.splitAtIndex(index)
-            callback(command, value)
-        }
-    }
+    val router = controller.buildConsoleRouter()
+
+    return ConsoleApp(router)
+}
+
+private fun buildSocketApp(chatStore: ChatStore, authService: AuthService): ClientSocketApp {
+    val socketController = ClientSocketController(chatStore, authService)
+
+    val clientRouter = socketController.buildRouter()
+
+    return ClientSocketApp(clientRouter)
 }
 
 fun main(args: Array<String>) {
     val chatStore = ChatStore()
     val authService = AuthService()
 
-    val clientController = ClientController(chatStore, authService)
-
-    val clientRouter = clientController.buildRouter()
-
-    val clientSocketApp = ClientSocketApp(clientRouter)
+    val clientSocketApp = buildSocketApp(chatStore, authService)
 
     clientSocketApp.start(Config.HOST, Config.PORT) { client ->
         val clientService = ClientService(client, authService)
 
         clientService.join()
 
-        consoleInputThread { command, value ->
-            when (command) {
-                "send" -> {
-                    clientService.message(value)
-                }
-                "exit" -> {
-                    clientService.exit()
-                    client.close()
-                }
-                else -> {
-                    println("Command not found")
-                }
-            }
-            command != "exit"
-        }
+        val clientConsoleApp = buildConsoleApp(client, clientService)
+
+        clientConsoleApp.start("exit")
 
         chatStore.chatObservable.subscribe { e ->
             println(e.toMessage())

@@ -16,7 +16,7 @@ class ClientSocketApp(private val socketRouter: Router<SocketRouteInput>) {
                 this.socketRouter.handle(RouteInput(input.event.endpoint, input))
             },
             onClose = {
-                println("Goodbye")
+                println("ClientSocketApp Goodbye")
             }
         )
     }
