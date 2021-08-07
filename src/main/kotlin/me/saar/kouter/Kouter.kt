@@ -1,10 +1,19 @@
 package me.saar.kouter
 
+fun pathParts(path: String) = path.let { if (!it.startsWith("/")) "/$it" else it }.split("/")
 
-fun pathParts(path: String) = path.let { if (it.startsWith("/")) it.subSequence(1, it.length) else it }.split("/")
+fun localPath(original: String, local: String): String {
+    val originalParts = pathParts(original)
+    val localParts = pathParts(local)
+
+    return originalParts.subList(localParts.size, originalParts.size).joinToString("/")
+}
 
 internal fun Route<*>.match(path: String): Boolean {
     val thisParts = pathParts(this.path)
     val otherParts = pathParts(path)
-    return thisParts == otherParts
+
+    if (thisParts.size > otherParts.size) return false
+
+    return thisParts.withIndex().all { it.value == otherParts[it.index] }
 }

@@ -11,8 +11,10 @@ class Router<T> : RouteHandler<T> {
     }
 
     override fun handle(input: RouteInput<T>) {
-        val route = this.routes.find { it.match(input.path) }
-
-        route?.handler?.handle(input)
+        this.routes.find { it.match(input.path) }?.let { route ->
+            val path = localPath(input.path, route.path)
+            val newInput = RouteInput(path, input.data)
+            route.handler.handle(newInput)
+        }
     }
 }
