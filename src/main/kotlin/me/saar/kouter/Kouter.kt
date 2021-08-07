@@ -1,6 +1,9 @@
 package me.saar.kouter
 
-fun pathParts(path: String) = path.let { if (!it.startsWith("/")) "/$it" else it }.split("/")
+fun pathParts(path: String) = path
+    .let { if (!it.startsWith("/")) "/$it" else it }
+    .let { if (it.endsWith("/")) it.substring(0, it.length - 1) else it }
+    .split("/")
 
 fun localPath(original: String, local: String): String {
     val originalParts = pathParts(original)
