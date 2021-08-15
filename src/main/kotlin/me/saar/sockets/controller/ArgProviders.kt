@@ -1,8 +1,8 @@
 package me.saar.sockets.controller
 
 import com.beust.klaxon.Klaxon
-import me.saar.kouter.RouteInput
-import me.saar.kouter.controller.ArgProvider
+import com.github.saar25.kouter.RouteInput
+import com.github.saar25.kouter.controller.ArgProvider
 import me.saar.sockets.Client
 import me.saar.sockets.SocketRouteInput
 import me.saar.sockets.parseFieldFromClass

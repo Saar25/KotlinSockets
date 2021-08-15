@@ -1,7 +1,7 @@
 package me.saar.sockets
 
-import me.saar.kouter.RouteInput
-import me.saar.kouter.Router
+import com.github.saar25.kouter.RouteInput
+import com.github.saar25.kouter.Router
 
 class ConsoleApp(private val consoleRouter: Router<ConsoleEvent>) {
 

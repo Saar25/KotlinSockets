@@ -1,7 +1,7 @@
 package me.saar.sockets.chat.server
 
-import me.saar.kouter.controller.Controller
-import me.saar.kouter.controller.Endpoint
+import com.github.saar25.kouter.controller.Controller
+import com.github.saar25.kouter.controller.Endpoint
 import me.saar.sockets.Client
 import me.saar.sockets.IdProvider
 import me.saar.sockets.chat.shared.*
