@@ -24,7 +24,7 @@ annotation class Socket
 
 private val klaxon = Klaxon()
 
-private val socketArgProvider = object : ArgProvider<SocketRouteInput> {
+private object SocketArgProvider : ArgProvider<SocketRouteInput> {
     override fun test(parameter: KParameter): Boolean {
         return parameter.annotations.any { it is Socket }
     }
@@ -34,7 +34,7 @@ private val socketArgProvider = object : ArgProvider<SocketRouteInput> {
     }
 }
 
-private val bodyArgProvider = object : ArgProvider<SocketRouteInput> {
+private object BodyArgProvider : ArgProvider<SocketRouteInput> {
     override fun test(parameter: KParameter): Boolean {
         return parameter.annotations.any { it is Body }
     }
@@ -44,7 +44,7 @@ private val bodyArgProvider = object : ArgProvider<SocketRouteInput> {
     }
 }
 
-private val bodyFieldArgProvider = object : ArgProvider<SocketRouteInput> {
+private object BodyFieldArgProvider : ArgProvider<SocketRouteInput> {
     override fun test(parameter: KParameter): Boolean {
         return parameter.annotations.any { it is BodyField }
     }
@@ -57,4 +57,4 @@ private val bodyFieldArgProvider = object : ArgProvider<SocketRouteInput> {
     }
 }
 
-val socketArgProviders = listOf(socketArgProvider, bodyArgProvider, bodyFieldArgProvider)
+val socketArgProviders = listOf(SocketArgProvider, BodyArgProvider, BodyFieldArgProvider)
